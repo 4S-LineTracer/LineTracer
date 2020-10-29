@@ -3,11 +3,12 @@
 */
 #include "agvvars.h"
 
+// ƒf[ƒ^Œn
 unsigned char SW_DATA;
 unsigned char SENS_DATA;
-
-unsigned char AGV_STATE;
-
-unsigned char MOTOR_STATE;
+unsigned char IRQ1_DATA;
 unsigned char MOTOR_SPEED;
 
+// ó‘Ô•Ï”
+unsigned char AGV_STATE;
+unsigned char MOTOR_STATE;

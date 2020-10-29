@@ -4,12 +4,14 @@
 #ifndef _AGVVARS_H_
 #define _AGVVARS_H_
 
+// ƒf[ƒ^Œn
 extern unsigned char SW_DATA;
 extern unsigned char SENS_DATA;
-
-extern unsigned char AGV_STATE;
-
-extern unsigned char MOTOR_STATE;
+extern unsigned char IRQ1_DATA;
 extern unsigned char MOTOR_SPEED;
+
+// ó‘Ô•Ï”
+extern unsigned char AGV_STATE;
+extern unsigned char MOTOR_STATE;
 
 #endif
