@@ -8,5 +8,5 @@ insertキーでインポートしてください。
 
 ## ChangeLog
 
-更新履歴は[CHANGELOG.md](https://github.com/4S-LineTracer/blob/master/CHANGELOG.md)より閲覧できます。
+更新履歴は[CHANGELOG.md](https://github.com/4S-LineTracer/LineTracer/blob/master/CHANGELOG.md)より閲覧できます。
 
