@@ -16,6 +16,7 @@
     extern void itask_control(); // ITU2 10ms
     extern void itask_motor(); // ITU1 variable
     extern void itask_input(); // ITU3 1ms
+    extern void itask_irq1(); // IRQ1
 
 /************************************************************************
 	割込みベクタの定義
@@ -39,7 +40,7 @@ const	unsigned int *IntVect[]={
 	PowerON_Reset,						/* 11: TRAPA3		*/
 
 	PowerON_Reset,						/* 12: IRQ0			*/
-	PowerON_Reset,						/* 13: IRQ1			*/
+	itask_irq1, 						/* 13: IRQ1			*/
 	PowerON_Reset,						/* 14: IRQ2			*/
 	PowerON_Reset,						/* 15: IRQ3			*/
 	PowerON_Reset,						/* 16: IRQ4			*/

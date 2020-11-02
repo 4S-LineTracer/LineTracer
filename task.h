@@ -18,5 +18,6 @@
 void itask_control();
 void itask_input();
 void itask_motor();
+void itask_irq1();
 
 #endif

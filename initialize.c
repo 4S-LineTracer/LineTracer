@@ -25,9 +25,6 @@ void initialize(){
     // TIOR3 = 
     // GRA3 = - 1;
 
-    // タイマ有効化
-    TSTR = 0b00000011;
-
     // 各種共有変数の値を初期化
     MOTOR_SPEED = 0;
     MOTOR_STATE = MOTOR_STOP;
@@ -37,4 +34,6 @@ void initialize(){
     SENS_DATA = 0;
     IRQ1_DATA = 0;
 
+    // タイマ有効化
+    TSTR = 0b00000011;
 }
