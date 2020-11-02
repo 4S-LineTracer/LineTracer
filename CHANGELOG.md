@@ -7,4 +7,6 @@
  - モータドライバ追加(Add: motor Driver)
  - ベクタテーブル、各種タスク構成(Update: vector table, task process)
 
-## 
+## 2020/11/02
+
+ - ITU0,1初期化処理実装 (Update: ITU0,1 initialize)
