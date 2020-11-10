@@ -4,14 +4,14 @@
 /*	DESCRIPTION :AGV Main Program																				*/
 /*	CPU TYPE    :H8/3052F																						*/
 /****************************************************************************************************************/
-#include	"stdio.h"
-#define	MAIN										/* マクロMAINの定義											*/
+#include "stdio.h"
+#define MAIN
 
-#include	"machine.h"								/* 組込み関数の定義											*/
-#include	"reg3052.h"								/* H8/3052Fの内蔵モジュール定義								*/
-#include	"agvdef.h"								/* 無人搬送車のデバイス定義									*/
-#include	"agvvars.h"								/* 無人搬送車の共通変数を定義								*/
-#include	"def_monitor_printf.h"
+#include "machine.h"
+#include "reg3052.h"
+#include "agvdef.h"
+#include "agvvars.h"
+#include "def_monitor_printf.h"
 
 #include "initialize.h"
 
@@ -25,22 +25,43 @@ void agv_init(void){
 /****************************************************************************************************************/
 /*	main関数																									*/
 /****************************************************************************************************************/
-int main(void) {
-	unsigned int i = 0;
-	agv_init();
-		 
-	MOTOR_SPEED = 0xFF;
-	
-	while(1){
-		// Do nothing...
-	}
-	return 0;
+int main(void){
+    unsigned int i = 0;
+    while (1){
+        switch (AGV_STATE){
+
+        case AGV_BOOT:
+            bios_led_output(0x01);
+            break;
+        case AGV_READY:
+            bios_led_output(0x02);
+            break;
+        case AGV_RUN_WAIT:
+            bios_led_output(0x04);
+            break;
+        case AGV_STOP_WAIT:
+            bios_led_output(0x08);
+            break;
+        case AGV_RUN:
+            bios_led_output(0x10);
+            break;
+        case AGV_BOOT_ALM:
+            bios_led_output(0x20);
+            break;
+        case AGV_READY_ALM:
+            bios_led_output(0x40);
+            break;
+        case AGV_RUN_ALM:
+            bios_led_output(0x80);
+            break;
+        }
+        sleep();
+    }
+    return 0;
 }
 
 /****************************************************************************************************************/
 /*	beepモジュール beep																							*/
 /****************************************************************************************************************/
-void beep(void)
-{
-
+void beep(void){
 }
