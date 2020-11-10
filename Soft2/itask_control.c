@@ -6,12 +6,17 @@
 /****************************************************************************************************************/
 #include "task.h"
 
+void handle_control(void);
+
 /****************************************************************************************************************/
 /* 搬送車動作状態監視・ハンドル制御タスク itask_control              */
 /****************************************************************************************************************/
 #pragma interrupt itask_control
 void itask_control(void){
-
+    handle_control();
+	bios_led_output(0xff);
+	
+	TSR2 &= ~0x01;
 }
 
 /****************************************************************************************************************/
@@ -30,6 +35,34 @@ void cal_sensor_position(void){
 /****************************************************************************************************************/
 /* ハンドル制御モジュール handle_control                  */
 /****************************************************************************************************************/
-void handle_control(void){
-
+void handle_control(void) {
+    static unsigned char HANDLE_DATA = 0x80;
+	unsigned char SENS_DATA = 0;
+	unsigned char SENS_DATA_R = 0;
+	unsigned char SENS_DATA_L = 0;
+	
+	// センサから値を取得し、左右に分割
+	SENS_DATA = bios_sensor_input();
+	SENS_DATA_R = (SENS_DATA & 0xF0) >> 4;
+    SENS_DATA_L = SENS_DATA & 0x0F;
+	
+	// 閾値を超えたら動かす
+	// TODO: ハンドル動かす量は中心から離れているほど大きいほうがいい?
+	if(SENS_DATA_L > 0x03){
+	    HANDLE_DATA--;
+    }
+    if(SENS_DATA_R > 0x0c){
+        HANDLE_DATA++;
+    }
+	
+	// ハンドル値範囲チェック (セーフティ)
+	if(HANDLE_DATA > 0xFE){
+		HANDLE_DATA = 0xFE;
+	}
+	if(HANDLE_DATA < 1){
+	    HANDLE_DATA = 0x01;	
+	}
+	
+	// サーボに出力
+	bios_da_output(HANDLE_DATA);
 }

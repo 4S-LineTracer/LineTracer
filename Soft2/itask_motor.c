@@ -13,4 +13,5 @@
 #pragma interrupt itask_motor
 void itask_motor(void){
     motorDrive(&MOTOR_STATE, &MOTOR_SPEED);
+	TSR1 &= ~0x01;
 }

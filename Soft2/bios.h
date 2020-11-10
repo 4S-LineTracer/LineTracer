@@ -17,7 +17,7 @@
 unsigned char bios_ad_input();
 unsigned char bios_sensor_input();
 unsigned char bios_sw_input();
-unsigned char bios_IRQ1_input(); // IRQ1割り込みベクタに設定する場合はここをvoidに!
+unsigned char bios_irq1_input(); // IRQ1割り込みベクタに設定する場合はここをvoidに!
 
 // outputs
 void bios_step_output(unsigned char i);
