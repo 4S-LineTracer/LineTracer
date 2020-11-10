@@ -20,7 +20,7 @@ void motorDrive(unsigned char* motorState, unsigned char* motorSpeed){
 }
 
 // パルス周波数テーブルを読み込む位置を移動
-void calcPulseFreqTableIndex(unsigned int* index, unsigned char* motorState, unsigned char* motorSpeed){
+void calcPulseFreqTableIndex(unsigned int *index, unsigned char *motorState, unsigned char *motorSpeed){
     // motorSpeedをリマップし、最高速度を計算
     // 00~FFの値を0~accDataSize-1に変換
     unsigned int maxSpeed = (float)*motorSpeed * (((float)accDataSize - 1) / 255.0);
@@ -36,14 +36,14 @@ void calcPulseFreqTableIndex(unsigned int* index, unsigned char* motorState, uns
         // 加速
         MOTOR_STATE = MOTOR_ACCEL;
         (*index)++;
-
         return;
+		
     } else if(maxSpeed < *index){
         // 減速
         MOTOR_STATE = MOTOR_BREAK;
         (*index)--;
-
         return;
+		
     } else if(maxSpeed == *index){
         // 加速中ならCONST 減速中ならSTOPに遷移
         MOTOR_STATE = (maxSpeed > 0) ? MOTOR_CONST : MOTOR_STOP;

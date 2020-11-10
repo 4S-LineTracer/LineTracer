@@ -15,4 +15,11 @@ def_monitor_printf.h
 # HEW Internal file
 *.hdp
 *.tmp
+*.abs
+*.h8g
+*.hlk
+*.lib
+*.map
+*.mot
+
 

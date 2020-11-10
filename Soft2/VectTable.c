@@ -11,11 +11,13 @@
 	割込み関数を外部ファイルで定義する場合は，ここで外部宣言を行なう
 *************************************************************************/
 
+#include "task.h"
+
 	extern void PowerON_Reset(void);
 
-    extern void itask_control(); // ITU2 10ms
-    extern void itask_motor(); // ITU1 variable
-    extern void itask_input(); // ITU3 1ms
+    extern void itask_control(void); // ITU2 10ms
+    extern void itask_motor(void); // ITU1 variable
+    extern void itask_input(void); // ITU3 1ms
     extern void itask_irq1(); // IRQ1
 
 /************************************************************************
