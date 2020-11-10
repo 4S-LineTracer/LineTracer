@@ -1,5 +1,18 @@
+# internal
 .DS_Store
+.vscode/
+
+# dummy header
 machine.h
 reg3052.h
 def_monitor_printf.h
-.vscode/
+
+# HEW object files
+*.h8c
+*.lst
+*.obj
+
+# HEW Internal file
+*.hdp
+*.tmp
+

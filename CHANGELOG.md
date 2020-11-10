@@ -12,4 +12,7 @@
  - ITU0,1初期化処理実装 (Update: ITU0,1 initialize)
  - IRQ1割り込み処理追加 (Add: IRQ1 Interrupt)
 
- 
+## 2020/11/11
+
+ - ファイルパス変更 (Modify: file path)
+ - gitignore更新 (Modify: gitignore)
