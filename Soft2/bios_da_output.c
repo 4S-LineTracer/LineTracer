@@ -15,7 +15,9 @@ void bios_da_output(unsigned char DA_DATA){
 //  - Parameters: ‚È‚µ
 //  - Returns: IRQ1“ü—Íó‘Ô
 unsigned char bios_irq1_input(void){
-	unsigned char IRQ1_DATA;
-	IRQ1_DATA = P8DR & 0x02;
-	return IRQ1_DATA;
+	unsigned char IRQ1_LOCAL_DATA;
+	IRQ1_LOCAL_DATA = P8DR & 0x02;
+	return IRQ1_LOCAL_DATA;
+	
+	
 }
