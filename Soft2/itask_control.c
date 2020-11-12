@@ -13,9 +13,46 @@ void handle_control(void);
 /****************************************************************************************************************/
 #pragma interrupt itask_control
 void itask_control(void){
-    handle_control();
-	bios_led_output(0xff);
 	
+	unsigned char MAX_SPPED=0;
+	unsigned char MIN_SPPED=0;
+	static unsigned char COUNT=0;
+	
+    handle_control();
+	
+    //モータースピード触る
+	if(SW_DATA&0x30 == 0x00){MAX_SPPED=0x40;}
+	else if(SW_DATA&0x30 == 0x10){MAX_SPPED=0x80;}
+	else if(SW_DATA&0x30 == 0x20){MAX_SPPED=0xc0;}
+	else if(SW_DATA&0x30 == 0x30){MAX_SPPED=0xff;}
+	
+	//AGVステート触る+モーター速度変更
+	if(IRQ1_DATA==1 && COUNT==0){
+		IRQ1_DATA=0;
+		switch(AGV_STATE){
+			
+			case AGV_READY:
+			AGV_STATE=AGV_RUN;
+		    MOTOR_SPEED=MAX_SPPED;
+		    break;
+			
+			case AGV_RUN:
+		    MOTOR_SPEED=MIN_SPPED;
+		    break;
+			
+		}
+		
+		COUNT=10;
+		
+		}
+	if(MOTOR_STATE==MOTOR_STOP){
+		AGV_STATE=AGV_READY;
+		}
+	
+	//テスト用？
+	//bios_led_output(0xff);
+	
+	if(COUNT>0){COUNT--;}
 	TSR2 &= ~0x01;
 }
 
