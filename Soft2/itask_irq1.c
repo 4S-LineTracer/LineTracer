@@ -9,6 +9,17 @@
 //  - Returns: なし
 #pragma interrupt itask_irq1
 void itask_irq1(void){
+
+    // TODO: IRQ1_DATAはここではアサートするだけにした方が良いかも?
+    // ここで短時間で処理を終えられないとステッピングモータの制御に影響してくるので
+    /*
+    // 例えばこんな感じ
+    IRQ1_DATA = 1;
+    ISR &= 0xFD;
+    return;
+    */
+
+
     unsigned int i = 0;
 
     if (IRQ1_DATA == 1){
@@ -22,27 +33,3 @@ void itask_irq1(void){
     ISR &= 0xfd;
     return;
 }
-
-/*
-// こっから先はそのままペターではダメです
-// 適宜書き換えてください
-#pragma interrupt imitation
-void imitation(void){
-	IRQ1_DATA = 0x01;
-	ISR &= 0xFD;
-	return;
-}
-
-// ---- itask_control ----
-void itask_control(){
-	if(IRQ1_DATA == 1){
-		IRQ1_DATA = 0;	
-		// interrupt process...
-		// example:
-		switch(AGV_STATE){
-			
-		}
-		// MOTOR_SPEED = 0x00; // 可能な限りのスピードで減速
-	}
-}
-*/

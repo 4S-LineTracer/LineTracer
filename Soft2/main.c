@@ -26,6 +26,13 @@ void agv_init(void){
 /*	main関数																									*/
 /****************************************************************************************************************/
 int main(void){
+    // TODO: main関数でagv_initを呼び出しておく必要があるかも
+    // あと複数のLEDが同時点灯する可能性があるのでそこも対応お願いします
+    // (一時的な変数を作ってOR演算で積んでくのが楽かな?)
+    // LEDに対応する状態については田中に聞いてください 対応表見せます
+
+    // TODO: ブザー制御もできれば…
+
     unsigned int i = 0;
     while (1){
         switch (AGV_STATE){
@@ -36,10 +43,10 @@ int main(void){
         case AGV_READY:
             bios_led_output(0x02);
             break;
-        case AGV_RUN_WAIT:
+        case AGV_RUN_WAIT: // TODO: この定数存在しないかも
             bios_led_output(0x04);
             break;
-        case AGV_STOP_WAIT:
+        case AGV_STOP_WAIT: // TODO: この定数存在しないかも
             bios_led_output(0x08);
             break;
         case AGV_RUN:
@@ -55,6 +62,7 @@ int main(void){
             bios_led_output(0x80);
             break;
         }
+        // TODO: mainでsleep使っちゃうとLEDの更新が遅れるかもしれぬ
         sleep();
     }
     return 0;
