@@ -17,4 +17,6 @@
  - ファイルパス変更 (Modify: file path)
  - gitignore更新 (Modify: gitignore)
  - プロジェクトディレクトリとマージ (Update: merge with HEW project directory)
- - README更新(Update: README)
+ - README更新 (Update: README)
+ - itask_control更新 (Update: itask_control)
+ 

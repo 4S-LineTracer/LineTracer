@@ -1,15 +1,11 @@
 # LineTracer
 
-## Latest Release: Merge HEW directory
-
-HEWのプロジェクトディレクトリ内のファイルをマージし、このリポジトリをクローンするだけでビルドできるように変更しました。  
-次回以降はこのリポジトリをクローンし、そのままダウンロードしてください。  
-
 ## Overview
 
 諸々の更新を取り込んだ、HEWにインポートすることを想定したリポジトリです。  
-~bbよりダウンロードできる`Soft2`を開き、このリポジトリの中身をまるごと~  
-~insertキーでインポートしてください。~
+授業前にこのリポジトリの[最新リリース](https://github.com/4S-LineTracer/LineTracer/release)をダウンロードし、HEWで開いてください。  
+
+![ダウンロード方法](https://user-images.githubusercontent.com/51850597/98921636-e1097880-2514-11eb-8352-979d51c56188.png)  
 
 ## ChangeLog
 
