@@ -6,7 +6,12 @@
 /****************************************************************************************************************/
 #include "task.h"
 
+unsigned char getMaxSpeed(unsigned char sw_data);
 void handle_control(void);
+
+// モータ速度最大/最小
+unsigned char MAX_SPEED = 0;
+unsigned char MIN_SPEED = 0;
 
 /****************************************************************************************************************/
 /* 搬送車動作状態監視・ハンドル制御タスク itask_control              */
@@ -14,81 +19,70 @@ void handle_control(void);
 #pragma interrupt itask_control
 void itask_control(void){
 
-    // モータ速度最大/最小
-    unsigned char MAX_SPPED = 0;
-    unsigned char MIN_SPPED = 0;
+    // 最大速度をスイッチの状態から取得し、設定
+    MAX_SPEED = getMaxSpeed(SW_DATA);
 
-    // クールタイム COUNTミリ秒間は次のIRQ1を受け付けない
-    static unsigned char COUNT = 0;
+    // AGVステート管理
+    agv_state();
 
     // ハンドル制御
     handle_control();
 
-    // モータースピード制御
-    // TODO: switchでも書けそう getMaxSpeed()とか関数に起こすのもアリ
-    /*
-        unsigned char getMaxSpeed(unsigned char sw_data){
-            switch(sw_data & 0x30){
-                case 0x00:
-                    return 0x40;
-                case 0x10:
-                    return 0x80;
-                
-                ...
+    TSR2 &= ~0x01;
+}
 
-                default:
-                    return 0x00; // 不正値入力の際のセーフティ
-            }
-        }
+// 最大速度を計算する
+unsigned char getMaxSpeed(unsigned char sw_data){
+    unsigned char sw_data_speed = sw_data & 0x30;
+    if (sw_data_speed == 0x00){
+        return 0x40;
+    }
+    else if (sw_data_speed == 0x10){
+        return 0x80;
+    }
+    else if (sw_data_speed == 0x20){
+        return 0xc0;
+    }
+    else if (sw_data_speed == 0x30){
+        return 0xff;
+    }
+    return 0x00;
+}
 
-        MOTOR_SPEED = getMaxSpeed(SW_DATA);
-    */
-    if (SW_DATA & 0x30 == 0x00){
-        MAX_SPPED = 0x40;
-    }
-    else if (SW_DATA & 0x30 == 0x10){
-        MAX_SPPED = 0x80;
-    }
-    else if (SW_DATA & 0x30 == 0x20){
-        MAX_SPPED = 0xc0;
-    }
-    else if (SW_DATA & 0x30 == 0x30){
-        MAX_SPPED = 0xff;
-    }
+// AGVステート管理
+void agv_state(void){
+    // クールタイム COUNTミリ秒間は次のIRQ1を受け付けない
+    static unsigned char COUNT = 0;
 
-    // AGVステート触る+モーター速度変更
+    // IRQ1割り込みが検出され、かつクールタイムが消化されていた場合
     if (IRQ1_DATA == 1 && COUNT == 0){
-        IRQ1_DATA = 0;
-        switch (AGV_STATE){
-
-        case AGV_READY:
-            AGV_STATE = AGV_RUN;
-            MOTOR_SPEED = MAX_SPPED;
-            break;
-
-        case AGV_RUN:
-            MOTOR_SPEED = MIN_SPPED;
-            break;
+        // モータ速度を変更
+        if(AGV_STATE == AGV_RUN){
+            MOTOR_SPEED = MIN_SPEED;
+        }else if (AGV_STATE == AGV_READY){
+            MOTOR_SPEED = MAX_SPEED; 
         }
 
+        // クールタイムを初期化
+        IRQ1_DATA = 0;
         COUNT = 10;
+
     }
-    // TODO: これ若干危険な気もする モータが停止したらとりあえずAGV_READYってのはまずい
-    // MOTOR_SPEED = 0x00; とかを挟まないとちょっとこわいかも
+
+    // モータが停止したら常にREADYに遷移
     if (MOTOR_STATE == MOTOR_STOP){
         AGV_STATE = AGV_READY;
     }
 
+    // センサが0を検出したらSEARCHに遷移
+    if(SENS_DATA == 0x00){
+        AGV_STATE = AGV_SEARCH;
+    }
+
+    // クールタイムを消化する
     if (COUNT > 0){
         COUNT--;
     }
-    TSR2 &= ~0x01;
-}
-
-/****************************************************************************************************************/
-/* AGVステート管理モジュール agv_state                   */
-/****************************************************************************************************************/
-void agv_state(void){
 }
 
 /****************************************************************************************************************/
