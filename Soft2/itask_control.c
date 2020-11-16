@@ -7,7 +7,8 @@
 #include "task.h"
 
 unsigned char getMaxSpeed(unsigned char sw_data);
-void handle_control(void);
+void handle_control();
+void agv_state();
 
 // モータ速度最大/最小
 unsigned char MAX_SPEED = 0;
@@ -20,10 +21,20 @@ unsigned char MIN_SPEED = 0;
 void itask_control(void){
 
     // 最大速度をスイッチの状態から取得し、設定
+	// TODO: なんかモータの調子がおかしい インデックスの設定ミスかこれ?
     MAX_SPEED = getMaxSpeed(SW_DATA);
 
     // AGVステート管理
     agv_state();
+	
+	// モータ速度制御
+	// TODO: 関数で分ける
+	if(AGV_STATE == AGV_RUN){
+		MOTOR_SPEED = MAX_SPEED;	
+	}else{
+		MOTOR_SPEED = MIN_SPEED;
+	}
+	
 
     // ハンドル制御
     handle_control();
@@ -35,7 +46,7 @@ void itask_control(void){
 unsigned char getMaxSpeed(unsigned char sw_data){
     unsigned char sw_data_speed = sw_data & 0x30;
     if (sw_data_speed == 0x00){
-        return 0x40;
+        return 0x80;
     }
     else if (sw_data_speed == 0x10){
         return 0x80;
@@ -44,45 +55,42 @@ unsigned char getMaxSpeed(unsigned char sw_data){
         return 0xc0;
     }
     else if (sw_data_speed == 0x30){
-        return 0xff;
+        return 0xC0;
     }
     return 0x00;
 }
 
 // AGVステート管理
-void agv_state(void){
-    // クールタイム COUNTミリ秒間は次のIRQ1を受け付けない
-    static unsigned char COUNT = 0;
-
-    // IRQ1割り込みが検出され、かつクールタイムが消化されていた場合
-    if (IRQ1_DATA == 1 && COUNT == 0){
-        // モータ速度を変更
-        if(AGV_STATE == AGV_RUN){
-            MOTOR_SPEED = MIN_SPEED;
-        }else if (AGV_STATE == AGV_READY){
-            MOTOR_SPEED = MAX_SPEED; 
-        }
-
-        // クールタイムを初期化
-        IRQ1_DATA = 0;
-        COUNT = 10;
-
-    }
-
-    // モータが停止したら常にREADYに遷移
-    if (MOTOR_STATE == MOTOR_STOP){
-        AGV_STATE = AGV_READY;
-    }
-
-    // センサが0を検出したらSEARCHに遷移
-    if(SENS_DATA == 0x00){
-        AGV_STATE = AGV_SEARCH;
-    }
-
-    // クールタイムを消化する
-    if (COUNT > 0){
-        COUNT--;
-    }
+void agv_state(){
+	static unsigned char coolTime = 10;
+	
+	// AGV_BOOT -> AGV_READYに遷移
+	if(AGV_STATE == AGV_BOOT){
+		AGV_STATE = AGV_READY;
+	}
+	
+	// IRQ1割り込みを検知したら
+	if(IRQ1_DATA == 0x01 && coolTime == 0){
+		// 割り込み検知フラグを折り、クールタイムを設定
+		IRQ1_DATA = 0x00;
+		coolTime = 10;
+		
+		// AGV_READYならAGV_RUNに移行し、最高速度を設定
+		// AGV_RUNならAGV_READYに移行し、止める方向へ
+		switch(AGV_STATE){
+			case AGV_READY:
+				AGV_STATE = AGV_RUN;
+				break;
+			
+			case AGV_RUN:
+				AGV_STATE = AGV_READY; // TODO: ここでREADYに戻すのは危険!
+				break;
+		}
+	}
+	
+	// クールタイム消化
+	
+	coolTime -= (coolTime > 0);
 }
 
 /****************************************************************************************************************/
@@ -95,21 +103,19 @@ void cal_sensor_position(void){
 /****************************************************************************************************************/
 void handle_control(void){
     static unsigned char HANDLE_DATA = 0x80;
-    unsigned char SENS_DATA = 0;
     unsigned char SENS_DATA_R = 0;
     unsigned char SENS_DATA_L = 0;
 
     // センサから値を取得し、左右に分割
-    SENS_DATA = bios_sensor_input();
     SENS_DATA_R = (SENS_DATA & 0xF0) >> 4;
     SENS_DATA_L = SENS_DATA & 0x0F;
 
     // 閾値を超えたら動かす
     // TODO: ハンドル動かす量は中心から離れているほど大きいほうがいい?
-    if (SENS_DATA_L > 0x03){
+    if (SENS_DATA_L > 0x04){
         HANDLE_DATA--;
     }
-    if (SENS_DATA_R > 0x0c){
+    if (SENS_DATA_R > 0x02){
         HANDLE_DATA++;
     }
 

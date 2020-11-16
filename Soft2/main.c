@@ -58,6 +58,7 @@ unsigned char setLEDData(){
     value |= ((MOTOR_STATE == MOTOR_BREAK) << 5);
     value |= ((MOTOR_STATE == MOTOR_STOP) << 6);
     value |= (isErrorState(AGV_STATE) << 7);
+	
     return value;
 }
 

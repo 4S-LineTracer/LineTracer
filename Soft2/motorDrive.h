@@ -5,6 +5,7 @@
 #define _MOTORDRIVE_H_
 
 #include "accTable.h"
+#include "def_monitor_printf.h"
 #include "bios.h"
 
 /* -------- */
