@@ -25,6 +25,10 @@ void initialize(){
     TCR3 = ITU_CLR_GRA | ITU_EDGE_RISE | ITU_PS_8;
     TIER3 = 0x01;
     GRA3 = 31250 - 1; // 40 * 8 = 320ns 0.32us. 10ms / 320n = 31,250.
+	
+	// IRQ1
+	IER |= 0x02;
+	ISCR |= 0x02;
 
     // 各種共有変数の値を初期化
     MOTOR_SPEED = 0x00;
@@ -33,6 +37,7 @@ void initialize(){
     SW_DATA = 0;
     SENS_DATA = 0;
     IRQ1_DATA = 0;
+	SENS_PROOF_TIME = 50; // Nms
 
     // タイマ有効化
     TSTR |= 0x0F;

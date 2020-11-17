@@ -8,6 +8,7 @@ unsigned char SW_DATA;
 unsigned char SENS_DATA;
 unsigned char IRQ1_DATA;
 unsigned char MOTOR_SPEED;
+extern unsigned char SENS_PROOF_TIME; // –¢ŒŸo‘Ï‹vŠÔ
 
 // ó‘Ô•Ï”
 unsigned char AGV_STATE;

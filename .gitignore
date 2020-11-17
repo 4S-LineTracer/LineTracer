@@ -4,8 +4,6 @@
 
 # dummy header
 machine.h
-reg3052.h
-def_monitor_printf.h
 
 # HEW object files
 *.h8c

@@ -20,3 +20,12 @@
  - README更新 (Update: README)
  - itask_control更新 (Update: itask_control)
  
+## 2020/11/16
+
+ - プロジェクトファイル更新　(Update: project files)
+ - 内部ファイルをgitコミット (Modify: restore internal files)
+ - 共有変数更新 (Update: internal variables)
+ - 諸々更新 (Update: main, control, initializer)
+    - main: LED出力設定, ブザー鳴動制御
+    - control: ステート制御まわり
+    - initializer: IRQ1割り込みの有効化
