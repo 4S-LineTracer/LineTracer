@@ -34,4 +34,6 @@ void itask_input(void){
     }
 
     SENS_DATA = prev_data;
+	
+	TSR3 &= ~0x01;
 }

@@ -19,7 +19,6 @@ unsigned char MIN_SPEED = 0;
 /****************************************************************************************************************/
 #pragma interrupt itask_control
 void itask_control(void){
-
     // 最大速度をスイッチの状態から取得し、設定
     // TODO: なんかモータの調子がおかしい インデックスの設定ミスかこれ?
     MAX_SPEED = getMaxSpeed(SW_DATA);
@@ -87,7 +86,7 @@ void agv_state(){
     // IRQ1割り込みを検知したら
     if (IRQ1_DATA == 0x01 && COOL_TIME == 0){
         // 割り込み検知フラグを折り、クールタイムを設定
-        IRQ1_DATA = 0x00;
+		IRQ1_DATA = 0x00;
         COOL_TIME = 50;
 
         // AGV_READYならAGV_RUNに移行し、最高速度を設定
