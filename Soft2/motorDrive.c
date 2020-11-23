@@ -23,7 +23,7 @@ void motorDrive(unsigned char* motorState, unsigned char* motorSpeed){
 void calcPulseFreqTableIndex(unsigned int *index, unsigned char *motorState, unsigned char *motorSpeed){
     // motorSpeedをリマップし、最高速度を計算
     // 00~FFの値を0~accDataSize-1に変換
-    unsigned int maxSpeed = (float)*motorSpeed * (((float)accDataSize - 1.0) / 255.0);
+    unsigned int maxSpeed = (float)*motorSpeed * 1.56471;
     #ifdef DEBUG
         // ちょっとmatplotlib通す
         // printf("index: %d\n", *index);

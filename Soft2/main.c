@@ -34,6 +34,7 @@ int main(){
 
         // エラー状態ならブザーも鳴動
         beep(isErrorState(AGV_STATE));
+		
     }
 
     return 0;

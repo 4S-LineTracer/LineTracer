@@ -11,7 +11,10 @@
 void itask_irq1(void){
 
     // IRQ1Š„‚è‚İ‚ğitask_control‚É’Ê’m
-    IRQ1_DATA = 1;
+    if(COOL_TIME == 0){
+		IRQ1_DATA = 1;
+	}
     ISR &= 0xFD;
+	
     return;
 }

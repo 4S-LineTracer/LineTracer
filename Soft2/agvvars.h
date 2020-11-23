@@ -10,6 +10,7 @@ extern unsigned char SENS_DATA;
 extern unsigned char IRQ1_DATA;
 extern unsigned char MOTOR_SPEED;
 extern unsigned char SENS_PROOF_TIME; // –¢ŒŸo‘Ï‹vŠÔ
+extern unsigned char COOL_TIME;
 
 // ó‘Ô•Ï”
 extern unsigned char AGV_STATE;

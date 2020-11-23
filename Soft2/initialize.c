@@ -37,6 +37,7 @@ void initialize(){
     SW_DATA = 0;
     SENS_DATA = 0;
     IRQ1_DATA = 0;
+	COOL_TIME = 0;
 	SENS_PROOF_TIME = 50; // Nms
 
     // タイマ有効化
