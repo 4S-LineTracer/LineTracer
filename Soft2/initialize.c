@@ -29,6 +29,12 @@ void initialize(){
 	// IRQ1
 	IER |= 0x02;
 	ISCR |= 0x02;
+	
+	// 割り込み優先順位設定
+	SYSCR |= (1 << 3); // UE(ユーザ割込み有効)
+	IPRA |= (1 << 6); // IRQ1を高優先順位グループに追加
+	IPRA |= (1 << 0); // ITU1を高優先順位グループに追加
+	// ITU2,3はデフォルトでおk
 
     // 各種共有変数の値を初期化
     MOTOR_SPEED = 0x00;
@@ -37,7 +43,6 @@ void initialize(){
     SW_DATA = 0;
     SENS_DATA = 0;
     IRQ1_DATA = 0;
-	COOL_TIME = 0;
 	SENS_PROOF_TIME = 50; // Nms
 
     // タイマ有効化

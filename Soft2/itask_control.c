@@ -9,6 +9,7 @@
 unsigned char getMaxSpeed(unsigned char sw_data);
 void handle_control();
 void agv_state();
+void updateProofTime(unsigned char *proofTime, unsigned char state, unsigned char sw_data);
 
 // モータ速度最大/最小
 unsigned char MAX_SPEED = 0;
@@ -19,6 +20,7 @@ unsigned char MIN_SPEED = 0;
 /****************************************************************************************************************/
 #pragma interrupt itask_control
 void itask_control(void){
+
     // 最大速度をスイッチの状態から取得し、設定
     // TODO: なんかモータの調子がおかしい インデックスの設定ミスかこれ?
     MAX_SPEED = getMaxSpeed(SW_DATA);
@@ -37,6 +39,10 @@ void itask_control(void){
 
     // ハンドル制御
     handle_control();
+	
+	// 耐久タイム更新
+	updateProofTime(&SENS_PROOF_TIME, AGV_STATE, SW_DATA);
+
 
     TSR2 &= ~0x01;
 }
@@ -86,7 +92,7 @@ void agv_state(){
     // IRQ1割り込みを検知したら
     if (IRQ1_DATA == 0x01 && COOL_TIME == 0){
         // 割り込み検知フラグを折り、クールタイムを設定
-		IRQ1_DATA = 0x00;
+        IRQ1_DATA = 0x00;
         COOL_TIME = 50;
 
         // AGV_READYならAGV_RUNに移行し、最高速度を設定
@@ -109,55 +115,84 @@ void agv_state(){
 /****************************************************************************************************************/
 /* センサ位置計算モジュール cal_sensor_position                */
 /****************************************************************************************************************/
-void cal_sensor_position(void){
-}
+int cal_sensor_position(void){}
 /****************************************************************************************************************/
 /* ハンドル制御モジュール handle_control                  */
 /****************************************************************************************************************/
 
 void handle_control(void){
     static unsigned char HANDLE_DATA = 0x80;
-    unsigned char SENS_DATA_R = 0;
+    static unsigned char INTERRUPT_COUNT_CONTROL = 0;
+	unsigned char SENS_DATA_R = 0;
     unsigned char SENS_DATA_L = 0;
 
     // センサから値を取得し、左右に分割
     SENS_DATA_R = (SENS_DATA & 0xF0) >> 4;
     SENS_DATA_L = SENS_DATA & 0x0F;
+	
 
     switch (AGV_STATE){
     case AGV_READY:
         break;
 
     case AGV_RUN:
-
-        // 閾値を超えたら動かす
+       
+	    // 閾値を超えたら動かす
         // TODO: ハンドル動かす量は中心から離れているほど大きいほうがいい?
+
+        if(INTERRUPT_COUNT_CONTROL % 2 == 0){
         if (SENS_DATA_L > 0x02){
-            HANDLE_DATA--;
+            HANDLE_DATA--; 
         }
         if (SENS_DATA_R > 0x04){
-            HANDLE_DATA++;
+			HANDLE_DATA++;
         }
-
-        // ハンドル値範囲チェック (セーフティ)
-        if (HANDLE_DATA > 0xFE){
+        INTERRUPT_COUNT_CONTROL = 0 ;
+        }
+	   
+	   // ハンドル値範囲チェック (セーフティ)
+       if (HANDLE_DATA > 0xFE){
             HANDLE_DATA = 0xFE;
         }
-        if (HANDLE_DATA < 1){
+       if (HANDLE_DATA < 1){
             HANDLE_DATA = 0x01;
         }
-
-        if (SENS_DATA == 0){
+	   if (SENS_DATA == 0){
             HANDLE_DATA = 0x80;
             AGV_STATE = AGV_RUN_ALM;
         }
-
+        break;
+		
+		case AGV_SEARCH:
         break;
 
     default:
         break;
     }
-
     // サーボに出力
+      INTERRUPT_COUNT_CONTROL ++ ;
     bios_da_output(HANDLE_DATA);
+}
+
+// スイッチの値からクールタイムを更新する。
+//  - Parameters: 
+//     - state: 搬送車の状態 (=AGV_STATE)
+//     - sw_data: スイッチの状態 (=SW_DATA)
+//  - Return: なし
+void updateProofTime(unsigned char *proofTime, unsigned char state, unsigned char sw_data){
+	float swValue; // スイッチの値(0.0~1.0)
+	float order = 50; // 最大値
+	
+	// 安全上の観点から、AGV_READY以外の状態では耐久時間を更新しない
+	if(state != AGV_READY){
+		return;
+	}
+	
+	// スイッチの値下位4bitを取り出す
+	swValue = ((float)(sw_data & 0x0F)) / 0x0F;
+	
+	
+	// 値を更新
+	*proofTime = swValue * order;
+	return;
 }

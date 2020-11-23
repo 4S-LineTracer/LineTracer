@@ -57,7 +57,7 @@ void stepOutput(){
     static int index = 0;
 
     #ifndef DEBUG
-        bios_step_output(index);
+		bios_step_output(index);
     #else
         printf("bios_step_output: %d\n", index);
     #endif

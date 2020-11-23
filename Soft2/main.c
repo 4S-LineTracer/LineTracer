@@ -15,74 +15,63 @@
 
 #include "initialize.h"
 
-void agv_init(void);
-unsigned char setLEDData();
-unsigned char isErrorState(unsigned char state);
-void beep(unsigned char stat);
+void beep(void);
 
 /****************************************************************************************************************/
-/*	main関数																									*/
+/*	AGVデバイス初期化モジュール agv_init																		*/
 /****************************************************************************************************************/
-int main(){
-    // レジスタ類初期化
-    agv_init();
-
-    // メインループ
-    while(1){
-        // LEDに出力する内容を更新
-        bios_led_output(setLEDData());
-
-        // エラー状態ならブザーも鳴動
-        beep(isErrorState(AGV_STATE));
-		
-    }
-
-    return 0;
-}
-
-// agv初期化
 void agv_init(void){
     initialize();
 }
 
-// LEDに出力する内容を決める。
-//  - Parameters: なし
-//  - Return: LEDに流し込む値
-unsigned char setLEDData(){
-    unsigned char value = 0x00;
+/****************************************************************************************************************/
+/*	main関数																									*/
+/****************************************************************************************************************/
+int main(void){
+    unsigned char LED_DATA = 0;
 
-    value |= ((AGV_STATE == AGV_BOOT) << 0);
-    value |= ((AGV_STATE == AGV_READY) << 1);
-    value |= ((AGV_STATE == AGV_RUN) << 2);
-    value |= ((AGV_STATE == AGV_SEARCH) << 3);
-    value |= ((MOTOR_STATE == MOTOR_ACCEL) << 4);
-    value |= ((MOTOR_STATE == MOTOR_BREAK) << 5);
-    value |= ((MOTOR_STATE == MOTOR_STOP) << 6);
-    value |= (isErrorState(AGV_STATE) << 7);
-	
-    return value;
-}
+    agv_init();
 
-// ブザーを鳴らす。
-//  - Parameters: なし
-//  - Return: なし
-void beep(unsigned char stat){
-    // TODO: 鳴らし方を変えられないか?
-    bios_beep_output(stat);
-}
+    while (1){
+        LED_DATA = 0x00;
 
-// エラー状態かどうかを取得する。
-//  - Parameters:
-//      - state: 搬送車の状態 (AGV_STATE)
-//  - Return: エラー状態ならば1 そうでなければ0
-unsigned char isErrorState(unsigned char state){
-    switch (state){
-        case AGV_BOOT_ALM:
-        case AGV_READY_ALM:
-        case AGV_RUN_ALM:
-            return 1;
-        
-        default:
-            return 0;
+        if (AGV_STATE == AGV_BOOT){
+            LED_DATA |= 0x01;
+        }
+        if (AGV_STATE == AGV_READY){
+            LED_DATA |= 0x02;
+        }
+        if (AGV_STATE == AGV_RUN){
+            LED_DATA |= 0x04;
+        }
+        if (AGV_STATE == AGV_SEARCH){
+            LED_DATA |= 0x08;
+        }
+        if (MOTOR_STATE == MOTOR_ACCEL){
+            LED_DATA |= 0x10;
+        }
+        if (MOTOR_STATE == MOTOR_CONST){
+            LED_DATA |= 0x20;
+        }
+        if (MOTOR_STATE == MOTOR_BREAK){
+            LED_DATA |= 0x40;
+        }
+        if (AGV_STATE == AGV_BOOT_ALM || AGV_STATE == AGV_READY_ALM || AGV_STATE == AGV_RUN_ALM){
+            LED_DATA |= 0x80;
+        }
+
+        bios_led_output(LED_DATA);
+        beep();
     }
+}
+
+/****************************************************************************************************************/
+/*	beepモジュール beep																							*/
+/****************************************************************************************************************/
+void beep(void){
+    unsigned char isError = 0;
+    if (AGV_STATE == AGV_BOOT_ALM || AGV_STATE == AGV_READY_ALM || AGV_STATE == AGV_RUN_ALM){
+        isError = 1;
+    }
+    bios_beep_output(isError);
 }
