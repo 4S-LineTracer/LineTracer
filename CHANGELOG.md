@@ -29,3 +29,9 @@
     - main: LED出力設定, ブザー鳴動制御
     - control: ステート制御まわり
     - initializer: IRQ1割り込みの有効化
+
+## 2020/12/12
+
+ - サーチ処理実装(AGV_SEARCH) (Update: handling(AGV_SEARCH))
+ - 走行テスト終了
+
