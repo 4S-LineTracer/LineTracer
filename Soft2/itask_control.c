@@ -123,9 +123,10 @@ int cal_sensor_position(void){}
 void handle_control(void){
     static unsigned char HANDLE_DATA = 0x80;
     static unsigned char INTERRUPT_COUNT_CONTROL = 0;
+	static unsigned char HANDLE_AHEAD = 0;
 	unsigned char SENS_DATA_R = 0;
     unsigned char SENS_DATA_L = 0;
-
+    unsigned char AD_NOW = 0;
     // センサから値を取得し、左右に分割
     SENS_DATA_R = (SENS_DATA & 0xF0) >> 4;
     SENS_DATA_L = SENS_DATA & 0x0F;
@@ -133,6 +134,12 @@ void handle_control(void){
 
     switch (AGV_STATE){
     case AGV_READY:
+	if(HANDLE_DATA < 0x80){
+		HANDLE_DATA++;
+		}
+	if(HANDLE_DATA > 0x80){
+		HANDLE_DATA--;
+		}
         break;
 
     case AGV_RUN:
@@ -157,17 +164,49 @@ void handle_control(void){
        if (HANDLE_DATA < 1){
             HANDLE_DATA = 0x01;
         }
+	   
+	   //サーチ回り
+	   
+	   if (HANDLE_DATA < 0x80){
+            HANDLE_AHEAD = 0;
+        }
+	   if(HANDLE_DATA >= 0x80){
+		   HANDLE_AHEAD = 1;
+		   }
+		  
 	   if (SENS_DATA == 0){
-            HANDLE_DATA = 0x80;
-            AGV_STATE = AGV_RUN_ALM;
+            AGV_STATE = AGV_SEARCH;
         }
         break;
 		
 		case AGV_SEARCH:
+		
+		AD_NOW = bios_ad_input();
+		
+		if(HANDLE_AHEAD == 0){
+			 HANDLE_DATA++;
+			}
+		if(HANDLE_AHEAD == 1){
+			 HANDLE_DATA--;
+			}
+		
+		if (HANDLE_DATA > 0xFE){
+            HANDLE_DATA = 0xFE;
+            }
+        if (HANDLE_DATA < 1){
+            HANDLE_DATA = 0x01;
+            }
+	   
+	   if(SENS_DATA != 0){
+		   AGV_STATE = AGV_RUN ;
+		   }
+		if((HANDLE_AHEAD == 0 && AD_NOW >= 0xE0 && SENS_DATA == 0) || (HANDLE_AHEAD == 1 && AD_NOW <= 0x1F && SENS_DATA == 0)){
+		AGV_STATE = AGV_RUN_ALM;
+		     }
         break;
 
     default:
-        break;
+	  break;
     }
     // サーボに出力
       INTERRUPT_COUNT_CONTROL ++ ;
